@@ -14,18 +14,26 @@ import java.util.ArrayList;
 public class Ejercicio4 {
     
     public boolean EsValido(int IdDato){
-        Order order= [SELECT * FROM Order WHERE Id:IdDato];
+        //Traigo la orden que tenga el id dato de la bd
+        Order order= [SELECT * FROM Order WHERE Id=IdDato];
+           //Verifico que el status de la orden sea valida
         if(order.isStatus()){
-            ArrayList<Product> productoID = [SELECT ProductId FROM OrdemItm WHERE OrderId=IdDato];
-            for(Product producto:productoID){
-                ArrayList<RelationShip> relationship = [SELECT productId FROM Product WHERE Id IN(SELECT RelationedProductId FROM RelationShip WHERE(MainProductId=1))];
+            //Creo una lista de id de productos, para obtener la relacion con OrderItem
+            //Para asi llegar a la lista de productos
+            ArrayList<Integer> productoID = [SELECT ProductId FROM OrderItem WHERE OrderId=IdDato];
+            
+            //Recorre la lista de productoIds y verifico la combinacion sea valida
+            for(Integer prodid: productoID){
+                ArrayList<RelationShip> relationship = [SELECT * FROM RelationShip WHERE RelationedProductId=prodid OR MainProductId=prodid];
+                //Verifico si la lista es vacia, es porque no hay combinacion valida
                 if(relationship.isEmpty()){
                     return false;
                 }
             }
             return true;
+        }else{
+            return false;
         }
-        return false;
     }
     
 }
